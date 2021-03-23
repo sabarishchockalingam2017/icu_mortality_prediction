@@ -14265,8 +14265,17 @@ a.anchor-link {
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Contents">Contents<a class="anchor-link" href="#Contents">&#182;</a></h2><ul>
-<li><a href="#introduction">Introduction</a></li>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#mimiciii-database">MIMIC III Database</a></li>
+<li><a href="#problem-statement">Problem Statement</a></li>
+</ul>
+</li>
 <li><a href="#eda">Exploratory Data Analysis</a></li>
+<li><a href="#feature_engineering">Feature Engineering</a></li>
+<li><a href="#model_development">Model Development</a></li>
+<li><a href="#model_analysis">Model Analysis</a></li>
+<li><a href="#conclusions">Conclusions</a></li>
+<li><a href="#acknowledgements">Acknowledgements</a></li>
 </ul>
 
 </div>
@@ -14319,9 +14328,15 @@ $( document ).ready(code_toggle);
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><b>MIMIC III Dataset</b><br>
-The MIMIC III</p>
-<p>This analysis studies factors that influence an ICU admitted patient's survival and attempts to build a classifier learning model to predict patient mortality.</p>
+<p><b>MIMIC III Database</b><a class="anchor" id="mimiciii-database"></a><br>
+The Medical Information Mart for Intensive Care III (MIMIC III) database contains deidentified records of <strong>46,520</strong> patients admitted to critical care units at <em>Beth Israel Deaconess Medical Center</em> between <em>2001</em> and <em>2012</em>. In total, <strong>61,532</strong> intensive care unit stays were recorded. <strong>53,432</strong> stays were adult patients and <strong>8,100</strong> stays were neonatal patients.</p>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><b>Problem Statement</b><a class="anchor" id="problem-statement"></a><br>
+Study factors which influence an intensive care patient's survival and build a classifier machine learning model to predict patient mortality.</p>
 
 </div>
 </div>
@@ -14332,7 +14347,7 @@ The MIMIC III</p>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[152]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -14352,7 +14367,7 @@ The MIMIC III</p>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># connecting to postgres database</span>
@@ -14371,7 +14386,7 @@ The MIMIC III</p>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[70]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">querystr</span> <span class="o">=</span> <span class="s1">&#39;select * from mimiciii.patients&#39;</span>
@@ -14386,7 +14401,7 @@ The MIMIC III</p>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[72]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">querystr</span> <span class="o">=</span> <span class="s1">&#39;select * from mimiciii.admissions&#39;</span>
@@ -14401,7 +14416,7 @@ The MIMIC III</p>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[73]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">staycount</span> <span class="o">=</span> <span class="n">admissions</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;subject_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">staycount</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;row_id&#39;</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">))</span>
@@ -14416,7 +14431,7 @@ The MIMIC III</p>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[40]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">querystr</span> <span class="o">=</span> <span class="s1">&#39;select * from mimiciii.admissions where subject_id=249&#39;</span>
@@ -14494,6 +14509,33 @@ The MIMIC III</p>
 </div>
 </div>
 
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Feature-Engineering">Feature Engineering<a class="anchor" id="feature_engineering" /><a class="anchor-link" href="#Feature-Engineering">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Model-Development">Model Development<a class="anchor" id="model_development" /><a class="anchor-link" href="#Model-Development">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Model-Analysis">Model Analysis<a class="anchor" id="model_analysis" /><a class="anchor-link" href="#Model-Analysis">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Conclusions">Conclusions<a class="anchor" id="conclusions" /><a class="anchor-link" href="#Conclusions">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Acknowledgements-">Acknowledgements <a class="anchor" id="acknowledgements" /><a class="anchor-link" href="#Acknowledgements-">&#182;</a></h2><p>The MIMIC III database was made available through the efforts of MIT Laboratory for Computational Physiology and collaborating research groups and supported by National Institute of Biomedical Imaging and Bioengineering (NIBIB) of the National Institutes of Health (NIH). <br><br>
+Pollard, T. J. &amp; Johnson, A. E. W. The MIMIC-III Clinical Database <a href="http://dx.doi.org/10.13026/C2XW26">http://dx.doi.org/10.13026/C2XW26</a> (2016).</p>
+
+</div>
 </div>
 </body>
 
