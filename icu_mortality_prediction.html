@@ -14272,14 +14272,19 @@ a.anchor-link {
 </li>
 <li><a href="#eda">Exploratory Data Analysis</a></li>
 <li><a href="#feature_engineering">Feature Engineering</a></li>
-<li><a href="#model_development">Model Development</a></li>
-<li><a href="#model_analysis">Model Analysis</a></li>
+<li><a href="#model_development">Model Development</a><ul>
+<li><a href="#logistic_regression">Logistic Regression</a></li>
+<li><a href="#random_forest">Random Forest</a></li>
+<li><a href="#svm">Support Vector Machine (SVM)</a></li>
+</ul>
+</li>
+<li><a href="#model_analysis">Best Model Analysis</a></li>
 <li><a href="#conclusions">Conclusions</a></li>
 <li><a href="#acknowledgements">Acknowledgements</a></li>
 </ul>
 
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell    celltag_hide-input">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell    celltag_hide_input">
 
 <div class="jp-Cell-outputWrapper">
 
@@ -14294,7 +14299,6 @@ a.anchor-link {
 
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 <script>
 code_show=true; 
@@ -14344,10 +14348,16 @@ Study factors which influence an intensive care patient's survival and build a c
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h2 id="Exploratory-Data-Analysis-">Exploratory Data Analysis <a class="anchor" id="eda" /><a class="anchor-link" href="#Exploratory-Data-Analysis-">&#182;</a></h2>
 </div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>MIMIC III has a myriad of fields that could provide keen insights. Below are the columns studied to get a better understanding of the data:<br></p>
+<ul>Age, Height, Weight, Gender, Heart Rate, Temperature, SpO2, Blood Pressure, Race, Marital Status, ICD9 codes, Prescriptions, Number of Admissions</ul>
+</div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[16]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
@@ -14367,7 +14377,7 @@ Study factors which influence an intensive care patient's survival and build a c
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[17]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[2]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># connecting to postgres database</span>
@@ -14386,10 +14396,11 @@ Study factors which influence an intensive care patient's survival and build a c
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[18]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[3]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">querystr</span> <span class="o">=</span> <span class="s1">&#39;select * from mimiciii.patients&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># getting patients table</span>
+<span class="n">querystr</span> <span class="o">=</span> <span class="s1">&#39;select * from mimiciii.patients&#39;</span>
 <span class="n">patients</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span><span class="n">querystr</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
 </pre></div>
 
@@ -14401,10 +14412,11 @@ Study factors which influence an intensive care patient's survival and build a c
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[19]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">querystr</span> <span class="o">=</span> <span class="s1">&#39;select * from mimiciii.admissions&#39;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># getting admissions table</span>
+<span class="n">querystr</span> <span class="o">=</span> <span class="s1">&#39;select * from mimiciii.admissions&#39;</span>
 <span class="n">admissions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span><span class="n">querystr</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
 </pre></div>
 
@@ -14416,26 +14428,12 @@ Study factors which influence an intensive care patient's survival and build a c
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[20]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">staycount</span> <span class="o">=</span> <span class="n">admissions</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;subject_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">staycount</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;row_id&#39;</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># calculating number of times a patient is admitted</span>
+<span class="n">staycount</span> <span class="o">=</span> <span class="n">admissions</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;subject_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">staycount</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;row_id&#39;</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">))</span>
 <span class="n">patients</span> <span class="o">=</span> <span class="n">patients</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">staycount</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;subject_id&#39;</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[21]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">querystr</span> <span class="o">=</span> <span class="s1">&#39;select * from mimiciii.admissions where subject_id=249&#39;</span>
-<span class="n">query3</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_sql_query</span><span class="p">(</span><span class="n">querystr</span><span class="p">,</span> <span class="n">conn</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14446,10 +14444,18 @@ Study factors which influence an intensive care patient's survival and build a c
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
 <div class="jp-Cell-inputWrapper">
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[130]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[42]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">stay_exp</span> <span class="o">=</span> <span class="n">patients</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;staycount&#39;</span><span class="p">,</span><span class="s1">&#39;expire_flag&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">number_of_patients</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;row_id&#39;</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># stay count vs expiration</span>
+<span class="n">stay_exp</span> <span class="o">=</span> <span class="n">patients</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;staycount&#39;</span><span class="p">,</span><span class="s1">&#39;expire_flag&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">number_of_patients</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;row_id&#39;</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">))</span>
+<span class="c1"># grouping to admitted and readmitted</span>
+<span class="n">stay_exp_grpd</span> <span class="o">=</span> <span class="n">stay_exp</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">stay_exp_grpd</span><span class="p">[</span><span class="s1">&#39;readmitted&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stay_exp_grpd</span><span class="p">[</span><span class="s1">&#39;staycount&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span>
+<span class="n">stay_exp_grpd</span><span class="p">[</span><span class="s1">&#39;readmitted&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stay_exp_grpd</span><span class="p">[</span><span class="s1">&#39;readmitted&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s1">&#39;More than one admission&#39;</span> <span class="k">if</span> <span class="n">x</span> <span class="k">else</span> <span class="s1">&#39;Admitted once&#39;</span><span class="p">)</span>
+<span class="n">stay_exp_grpd</span> <span class="o">=</span> <span class="n">stay_exp_grpd</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;staycount&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;readmitted&#39;</span><span class="p">,</span><span class="s1">&#39;expire_flag&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="c1"># plotting number of readmits below 10</span>
 <span class="n">stay_exp</span> <span class="o">=</span> <span class="n">stay_exp</span><span class="p">[</span><span class="n">stay_exp</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;staycount&#39;</span><span class="p">)</span><span class="o">&lt;=</span><span class="mi">10</span><span class="p">]</span>
 
 <span class="n">fig</span><span class="o">=</span><span class="n">stay_exp</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;staycount&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;expire_flag&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;number_of_patients&#39;</span><span class="p">)</span>\
@@ -14491,8 +14497,92 @@ Study factors which influence an intensive care patient's survival and build a c
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Patients with repeat ICU admissions did not exhibit a decreased chance of survival.</p>
+<p>Patients with repeat ICU admissions exhibited a significantly decreased chance of survival. Since there are fewer instances, effects of readmission may not be accurately represented.</p>
 
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell   ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[43]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># plotting no readmission vs readmission</span>
+<span class="n">fig</span><span class="o">=</span><span class="n">stay_exp_grpd</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span><span class="o">.</span><span class="n">pivot</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;readmitted&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;expire_flag&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;number_of_patients&#39;</span><span class="p">)</span>\
+    <span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">),</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Repeat Admissions&#39;</span><span class="p">,</span> 
+              <span class="n">xlabel</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">ylabel</span><span class="o">=</span><span class="s1">&#39;Patients&#39;</span><span class="p">,</span> <span class="n">rot</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;Did not expire&#39;</span><span class="p">,</span> <span class="s1">&#39;Expired&#39;</span><span class="p">]);</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+<div class="jp-Cell-outputWrapper">
+
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+
+<div class="jp-OutputArea-child">
+
+    
+    <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+
+
+
+
+<div class="jp-RenderedImage jp-OutputArea-output ">
+<img src="data:image/png;base64,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a7ye9kybNo2zzjqrqduo5zlxkiStZ4Z84+ddur5nzjqgw2X69u3LjBkzAHj55Zf5zGc+w/z58znttNMYOXIkI0eO7NKa2rrhhhs48MADGTZsWNO2cdBBB3HQQQet0L5kyRJ69+76yOVInCRJWqu22GILJk+ezIUXXkhmcvvtt3PggQcC8Oqrr7L//vuz66678vnPf57MbLiOfv368U//9E/ssssujBo1ipdeegmAP/zhD4wdO5add96ZsWPH8uyzz3LPPfcwbdo0vvrVrzJ8+HCefPLJ5dY1b948PvWpT/GhD32ID33oQ9x9990AHHzwwVxyySUA/OAHP+Dwww8HYMyYMZxyyinsueee7LTTTkyfPh2AqVOnctJJJwFw9NFH8+Uvf5l99tmHr3/96zz55JOMGzeOESNG8OEPf5jHH398jX+PhjhJkrTW/fVf/zXLli3j5ZdfXq79tNNOY/To0Tz00EMcdNBBPPvssw37v/XWW4waNYqHH36Yvffem4suugiAk046iSOPPJJHHnmEww8/nJNPPpk999yTgw46iLPPPpsZM2aw7bbbLreuL37xi3zpS1/i/vvv59prr+Xv/u7vAJg8eTKnn346d955J+eeey7f/e53l9v+Pffcw/e+9z2OOeaYhjX+7ne/49Zbb+Xcc8/l+OOP57vf/S4PPPAA55xzDn//93+/2r+7Vh5OFdD1Q+vris4cIpAkrZ5Go2x33HEH1113HQAHHHAAm266acO+7373u98ZvRsxYgS33HILAPfee+87/T/72c/yta99rcM6br311uXOl1uwYAELFy5kyy235PTTT2efffbh+uuvZ7PNNntnmYkTJwKw9957s2DBAt54440V1jt+/Hh69erFm2++yT333MP48ePfmbd48eIO6+qIIU6SJK11Tz31FL169WKLLbZg9uzZy83rzJWaG2ywwTvL9erViyVLljRcrjPrWrZsGffeey99+/ZdYd6jjz7KwIEDef7559tdb6PtbLTRRu+sf5NNNnnnnMCu4uFUSZK0Vs2bN48TTjiBk046aYXws/fee3PZZZcBcNNNN/H666+v0rr33HNPrrjiCgAuu+wyRo8eDUD//v1ZuHBhwz77778/F1544TvvW8PW9OnTuemmm3jooYc455xzePrpp99Z5sorrwTgrrvuYsCAAQwYMGClNW288cYMHTqUq6++GqiNQD788MOrtF+NGOIkSVLT/fnPf37nFiP77rsv+++/P6eeeuoKy5166qnccccd7Lbbbtx8881ss802q7SdCy64gP/6r/9i55135tJLL+U73/kOABMmTODss89m1113XeHChgsuuICWlhZ23nlnhg0bxn/+53+yePFijjvuOH70ox/xvve9j3PPPZdjjjnmnUPAm266KXvuuScnnHACU6ZM6bCuyy67jClTprDLLruw4447cuONN67SfjUSK7vqY101cuTIbGlp6e4yehzPiWvMc+IkrQtmz57NDjvs0N1lrDPGjBnDOeec0+W3RWn07xQRD2Rmww05EidJklRBXtggSZK0Cm6//fbuLgFwJE6SJKmSDHGSJEkVZIiTJEmqIEOcJElSBRniJElS0/Xq1Yvhw4e/8zrrrLNWaz3f+ta3uPXWW1e7jttvv/2dx3VVnVenSpK0vpm08qcLrN765ne4SN++fbvksVOnn356w/alS5fSq1evNV5/lTgSJ0mSusX8+fP54Ac/yBNPPAHUHip/0UUXAdCvXz++8pWvsNtuuzF27FjmzZsHwNFHH80111wDwJAhQzj99NMZPXo0V199NTfffDN77LEHu+22G+PHj+fNN98E4Je//CXbb789o0eP5rrrruuGPW0OQ5wkSWq61sdutb6uvPJKBgwYwIUXXsjRRx/NFVdcweuvv85xxx0HwFtvvcVuu+3Ggw8+yEc+8hFOO+20huvt06cPd911F/vuuy9nnHEGt956Kw8++CAjR47kvPPOY9GiRRx33HH89Kc/5c477+TFF19cm7vdVB5OlSRJTbeyw6n77bcfV199NSeeeOJyD4V/17vexac//WkAjjjiCD75yU82XG/rMvfddx+zZs1ir732AuAvf/kLe+yxB48//jhDhw5lu+22e2ddkydP7spd6zZNG4mLiK0j4tcRMTsiZkbEF0v7pIj4Y0TMKK9P1PX5ZkTMiYgnIuJjde0jIuLRMu+CiIjSvmFEXFnafxsRQ5q1P5IkqestW7aM2bNn07dvX1577bWVLlf+17+CjTbaCIDMZL/99mPGjBnMmDGDWbNmvfNg+pX1rbpmHk5dAnwlM3cARgEnRsSwMu/8zBxeXr8AKPMmADsC44DvRUTrGYrfB44HtiuvcaX9WOD1zHw/cD7w7SbujyRJ6mLnn38+O+ywA5dffjnHHHMMb7/9NlALd63nvv3kJz9h9OjR7a5n1KhR3H333cyZMweAP/3pT/zud79j++235+mnn+bJJ58E4PLLL2/i3qxdTTucmpkvAC+U6YURMRvYqp0uBwNXZOZi4OmImAPsHhHPABtn5r0AEXEJcAhwU+kzqfS/BrgwIiIzs+v3SJIkra7Wc+JajRs3jmOOOYYf/vCHTJ8+nf79+7P33ntzxhlncNppp7HRRhsxc+ZMRowYwYABA7jyyivbXf+gQYOYOnUqEydOZPHixQCcccYZfOADH2Dy5MkccMABbL755owePZrHHnusmbu61sTayDvlMOcdwE7Al4GjgQVAC7XRutcj4kLgvsz8cekzhVpQewY4KzP3Le0fBr6emQdGxGPAuMycW+Y9CfxNZr6yslpGjhyZLS0tTdnPKhvyjZ93dwk90jNnHdDdJUjSGps9ezY77LBDd5exSvr16/fO1aXri0b/ThHxQGaObLR8069OjYh+wLXAKZm5gNqh0W2B4dRG6s5tXbRB92ynvb0+bWs4PiJaIqKl9RJlSZKkKmtqiIuIDagFuMsy8zqAzHwpM5dm5jLgImD3svhcYOu67oOB50v74Abty/WJiN7AAGCFsyIzc3JmjszMkYMGDeqq3ZMkSU2yvo3CrY5mXp0awBRgdmaeV9f+3rrFDgVaD0xPAyaUK06HUruAYXo5t25hRIwq6zwSuLGuz1Fl+jDgV54PJ0mS1gfNvE/cXsBngUcjYkZp+0dgYkQMp3bY8xng8wCZOTMirgJmUbuy9cTMXFr6fQGYCvSldp7cTaV9CnBpuQjiNWpXt0qSpDYyc5291ca6YHXGoJp5depdND5n7Rft9DkTOLNBewu1iyLati8Cxq9BmZIkrfP69OnDq6++ysCBAw1yPVBm8uqrr9KnT59V6ucTGyRJWscNHjyYuXPn4sV9PVefPn0YPHhwxwvWMcRJkrSO22CDDRg6dGh3l6Eu1vRbjEiSJKnrGeIkSZIqyBAnSZJUQYY4SZKkCjLESZIkVZAhTpIkqYIMcZIkSRVkiJMkSaogQ5wkSVIFGeIkSZIqyBAnSZJUQYY4SZKkCjLESZIkVZAhTpIkqYIMcZIkSRVkiJMkSaogQ5wkSVIFGeIkSZIqyBAnSZJUQYY4SZKkCjLESZIkVZAhTpIkqYIMcZIkSRVkiJMkSaogQ5wkSVIFGeIkSZIqyBAnSZJUQYY4SZKkCjLESZIkVZAhTpIkqYIMcZIkSRVkiJMkSaogQ5wkSVIFGeIkSZIqyBAnSZJUQYY4SZKkCjLESZIkVVDTQlxEbB0Rv46I2RExMyK+WNo3i4hbIuL35eemdX2+GRFzIuKJiPhYXfuIiHi0zLsgIqK0bxgRV5b230bEkGbtjyRJUk/SzJG4JcBXMnMHYBRwYkQMA74B3JaZ2wG3lfeUeROAHYFxwPcioldZ1/eB44HtymtcaT8WeD0z3w+cD3y7ifsjSZLUYzQtxGXmC5n5YJleCMwGtgIOBi4ui10MHFKmDwauyMzFmfk0MAfYPSLeC2ycmfdmZgKXtOnTuq5rgLGto3SSJEnrsrVyTlw5zLkr8Ftgy8x8AWpBD9iiLLYV8Fxdt7mlbasy3bZ9uT6ZuQSYDwxsyk5IkiT1IE0PcRHRD7gWOCUzF7S3aIO2bKe9vT5tazg+IloiomXevHkdlSxJktTjNTXERcQG1ALcZZl5XWl+qRwipfx8ubTPBbau6z4YeL60D27QvlyfiOgNDABea1tHZk7OzJGZOXLQoEFdsWuSJEndqplXpwYwBZidmefVzZoGHFWmjwJurGufUK44HUrtAobp5ZDrwogYVdZ5ZJs+res6DPhVOW9OkiRpnda7ieveC/gs8GhEzCht/wicBVwVEccCzwLjATJzZkRcBcyidmXriZm5tPT7AjAV6AvcVF5QC4mXRsQcaiNwE5q4P5IkST1G00JcZt5F43PWAMaupM+ZwJkN2luAnRq0L6KEQEmSpPWJT2yQJEmqIEOcJElSBRniJEmSKsgQJ0mSVEGGOEmSpAoyxEmSJFWQIU6SJKmCDHGSJEkVZIiTJEmqIEOcJElSBRniJEmSKsgQJ0mSVEGGOEmSpAoyxEmSJFWQIU6SJKmCDHGSJEkVZIiTJEmqIEOcJElSBRniJEmSKsgQJ0mSVEGGOEmSpAoyxEmSJFWQIU6SJKmCDHGSJEkVZIiTJEmqIEOcJElSBRniJEmSKsgQJ0mSVEGGOEmSpAoyxEmSJFWQIU6SJKmCDHGSJEkV1KkQFxHbRsSGZXpMRJwcEZs0tTJJkiStVGdH4q4FlkbE+4EpwFDgJ02rSpIkSe3qbIhblplLgEOBf8/MLwHvbV5ZkiRJak9nQ9zbETEROAr4WWnboDklSZIkqSOdDXGfA/YAzszMpyNiKPDj5pUlSZKk9vTu5HL7ZebJrW9KkPtzk2qSJElSBzo7EndUg7aju7AOSZIkrYJ2Q1xETIyInwJDI2Ja3evXwKsd9P1RRLwcEY/VtU2KiD9GxIzy+kTdvG9GxJyIeCIiPlbXPiIiHi3zLoiIKO0bRsSVpf23ETFkNX8HkiRJldPR4dR7gBeAzYFz69oXAo900HcqcCFwSZv28zPznPqGiBgGTAB2BN4H3BoRH8jMpcD3geOB+4BfAOOAm4Bjgdcz8/0RMQH4NvDpDmqSJElaJ7Qb4jLzD8AfqF3UsEoy845VGB07GLgiMxcDT0fEHGD3iHgG2Dgz7wWIiEuAQ6iFuIOBSaX/NcCFERGZmataqyRJUtV09okNn4yI30fE/IhYEBELI2LBam7zpIh4pBxu3bS0bQU8V7fM3NK2VZlu275cn3IPu/nAwNWsSZIkqVI6e2HDvwEHZeaAzNw4M/tn5sarsb3vA9sCw6kdpm09RBsNls122tvrs4KIOD4iWiKiZd68eatUsCRJUk/U2RD3UmbOXtONZeZLmbk0M5cBFwG7l1lzga3rFh0MPF/aBzdoX65PRPQGBgCvrWS7kzNzZGaOHDRo0JruhiRJUrfrbIhrKVeCTiyHVj8ZEZ9c1Y1FRP2jug4FWq9cnQZMKFecDgW2A6Zn5gvAwogYVa5KPRK4sa5P661PDgN+5flwkiRpfdHZm/1uDPwJ2L+uLYHrVtYhIi4HxgCbR8Rc4FRgTEQML32fAT4PkJkzI+IqYBawBDixXJkK8AVqV7r2pXZBw02lfQpwabkI4jVqV7dKkiStFzoV4jLzc6u64syc2KB5SjvLnwmc2aC9BdipQfsiYPyq1iVJkrQu6OzVqR+IiNtab9wbETtHxD83tzRJkiStTGfPibsI+CbwNkBmPoKHLyVJkrpNZ0PcezJzepu2JV1djCRJkjqnsyHulYjYlnIftog4jNp93iRJktQNOnt16onAZGD7iPgj8DRwRNOqkiRJUrs6e3XqU8C+EbER8K7MXNjcsiRJktSedkNcRByRmT+OiC+3aQcgM89rYm2SJElaiY5G4jYqP/s3mOfTESRJkrpJuyEuM39QJm/NzLvr50XEXk2rSpIkSe3q7NWp3+1kmyRJktaCjs6J2wPYExjU5ry4jYFezSxMkiRJK9fROXHvBvqV5erPi1sAHNasoiRJktS+js6J+w3wm4iYmpl/WEs1SZIkqQOdvdnvnyLibGBHoE9rY2Z+tClVSZIkqV2dvbDhMuBxYChwGvAMcH+TapIkSVIHOhviBmbmFODtzPxNZh4DjGpiXZIkSWpHZw+nvl1+vhARBwDPA4ObU5IkSZI60tkQd0ZEDAC+Qu3+cBsDX2paVZIkSWpXR/eJ6wOcALwf2AqYkpn7rI3CJEmStHIdnRN3MTASeBT4OHBu0yuSJElShzo6nDosM/83QERMAaY3vyRJkiR1pKORuNYLGsjMJU2uRZIkSZ3U0UjcLhGxoEwH0Le8DyAzc+OmVidJkqSGOnrslg+5lyRJ6oE6e7NfSZIk9SCdvU+ctH6aNKC7K+h5Js3v7gokSTgSJ0mSVEmGOEmSpAoyxEmSJFWQIU6SJKmCDHGSJEkVZIiTJEmqIEOcJElSBRniJEmSKsgQJ0mSVEGGOEmSpAoyxEmSJFWQIU6SJKmCDHGSJEkV1LQQFxE/ioiXI+KxurbNIuKWiPh9+blp3bxvRsSciHgiIj5W1z4iIh4t8y6IiCjtG0bElaX9txExpFn7IkmS1NM0cyRuKjCuTds3gNsyczvgtvKeiBgGTAB2LH2+FxG9Sp/vA8cD25VX6zqPBV7PzPcD5wPfbtqeSJIk9TBNC3GZeQfwWpvmg4GLy/TFwCF17Vdk5uLMfBqYA+weEe8FNs7MezMzgUva9Gld1zXA2NZROkmSpHXd2j4nbsvMfAGg/NyitG8FPFe33NzStlWZbtu+XJ/MXALMBwY22mhEHB8RLRHRMm/evC7aFUmSpO7TUy5saDSClu20t9dnxcbMyZk5MjNHDho0aDVLlCRJ6jnWdoh7qRwipfx8ubTPBbauW24w8HxpH9ygfbk+EdEbGMCKh28lSZLWSWs7xE0DjirTRwE31rVPKFecDqV2AcP0csh1YUSMKue7HdmmT+u6DgN+Vc6bkyRJWuf1btaKI+JyYAyweUTMBU4FzgKuiohjgWeB8QCZOTMirgJmAUuAEzNzaVnVF6hd6doXuKm8AKYAl0bEHGojcBOatS+SJEk9TdNCXGZOXMmssStZ/kzgzAbtLcBODdoXUUKgJEnS+qanXNggSZKkVWCIkyRJqiBDnCRJUgUZ4iRJkirIECdJklRBhjhJkqQKMsRJkiRVkCFOkiSpggxxkiRJFWSIkyRJqiBDnCRJUgUZ4iRJkirIECdJklRBhjhJkqQKMsRJkiRVkCFOkiSpggxxkiRJFWSIkyRJqiBDnCRJUgUZ4iRJkirIECdJklRBhjhJkqQKMsRJkiRVkCFOkiSpggxxkiRJFWSIkyRJqiBDnCRJUgUZ4iRJkirIECdJklRBhjhJkqQKMsRJkiRVkCFOkiSpggxxkiRJFWSIkyRJqiBDnCRJUgUZ4iRJkirIECdJklRBhjhJkqQK6pYQFxHPRMSjETEjIlpK22YRcUtE/L783LRu+W9GxJyIeCIiPlbXPqKsZ05EXBAR0R37I0mStLZ150jcPpk5PDNHlvffAG7LzO2A28p7ImIYMAHYERgHfC8iepU+3weOB7Yrr3FrsX5JkqRu05MOpx4MXFymLwYOqWu/IjMXZ+bTwBxg94h4L7BxZt6bmQlcUtdHkiRpndZdIS6BmyPigYg4vrRtmZkvAJSfW5T2rYDn6vrOLW1blem27ZIkSeu83t203b0y8/mI2AK4JSIeb2fZRue5ZTvtK66gFhSPB9hmm21WtVZJkqQep1tG4jLz+fLzZeB6YHfgpXKIlPLz5bL4XGDruu6DgedL++AG7Y22NzkzR2bmyEGDBnXlrkiSJHWLtR7iImKjiOjfOg3sDzwGTAOOKosdBdxYpqcBEyJiw4gYSu0ChunlkOvCiBhVrko9sq6PJEnSOq07DqduCVxf7gbSG/hJZv4yIu4HroqIY4FngfEAmTkzIq4CZgFLgBMzc2lZ1xeAqUBf4KbykiRJWuet9RCXmU8BuzRofxUYu5I+ZwJnNmhvAXbq6holSZJ6up50ixFJkiR1kiFOkiSpggxxkiRJFWSIkyRJqiBDnCRJUgUZ4iRJkiqoux67JUnS+mvSgO6uoOeZNL+7K6gcR+IkSZIqyJE4SVLTDPnGz7u7hB7pmT7dXYHWBY7ESZIkVZAhTpIkqYIMcZIkSRVkiJMkSaogQ5wkSVIFGeIkSZIqyBAnSZJUQYY4SZKkCjLESZIkVZAhTpIkqYIMcZIkSRVkiJMkSaogQ5wkSVIFGeIkSZIqyBAnSZJUQYY4SZKkCjLESZIkVZAhTpIkqYIMcZIkSRVkiJMkSaogQ5wkSVIFGeIkSZIqyBAnSZJUQYY4SZKkCjLESZIkVZAhTpIkqYIMcZIkSRVkiJMkSaogQ5wkSVIFGeIkSZIqqPIhLiLGRcQTETEnIr7R3fVIkiStDZUOcRHRC/gP4OPAMGBiRAzr3qokSZKar9IhDtgdmJOZT2XmX4ArgIO7uSZJkqSmq3qI2wp4ru793NImSZK0Tuvd3QWsoWjQlissFHE8cHx5+2ZEPNHUqrTOCNgceKW76+hRTmv0sZO0KvxuacDvlpX5q5XNqHqImwtsXfd+MPB824UyczIweW0VpXVHRLRk5sjurkPSusXvFnWFqh9OvR/YLiKGRsS7gQnAtG6uSZIkqekqPRKXmUsi4iTgv4FewI8yc2Y3lyVJktR0lQ5xAJn5C+AX3V2H1lkehpfUDH63aI1F5grXAUiSJKmHq/o5cZIkSeslQ5x6nIg4NCIyIrZvZ5nbI6LTV3ZFxMiIuKBMj4mIPevmHbI6T/qIiDdXtY+k5ZXP+qV173tHxLyI+FkTtjU8Ij5R935SRPxDV2+nO0XEkIh4bBX7nB4R+65in3e+U9V9DHHqiSYCd1G72rhLZGZLZp5c3o4B9qybfQi1x7ZJWvveAnaKiL7l/X7AH1dlBRHR2fO7hwOf6Gih9U1mfiszb13FPvXfqeomhjj1KBHRD9gLOJa6EBcRfSPiioh4JCKuBPrWzXszIr4dEQ9ExK0RsXsZqXsqIg4qy4yJiJ9FxBDgBOBLETEjIj4CHAScXd5vW16/LOu7s3VEsNzK5t6IuD8i/qWdffhyRDxWXqeUtiERMTsiLoqImRFxc+v/tCLi/aXuhyPiwYjYtrR/tWzrkYg4rSt/z1IPcxNwQJmeCFzeOiMiNouIG8rn4L6I2Lm0T4qIyRFxM3BJRAyKiGvLZ+b+iNirfgPlNlSnA58un/VPl1nD6r4vTq5b/obyHTCz3DC+tf3NiDizfF7vi4gt2+5MBzX/aCXbOyIippfafhC1Z4O3Xe+3yr49VvY9SvuIUs+9wIl1yx9d6vhpRDwdESeV76eHSl2bleWmRsRhZfqsiJhVaj+ntI0v23w4Iu4obWOijJauzv6qi2SmL1895gUcAUwp0/cAu5XpL1O7hQzAzsASYGR5n8DHy/T1wM3ABsAuwIzSPgb4WZmeBPxD3TanAofVvb8N2K5M/w3wqzI9DTiyTJ8IvNmg/hHAo8BGQD9gJrArMKTUPLwsdxVwRJn+LXBome4DvAfYn9rVa0Htj62fAXt397+PL19d/QLeLJ/pa8p//zPafF6/C5xapj9a95meBDwA9C3vfwKMLtPbALMbbOto4MK695PK98yG1J6g8CqwQZm3WfnZF3gMGFjeJ/C3ZfrfgH9usJ32al5he8AOwE/rtv291u+aNuvdrG760ro6HgE+UqbPBh6r2985QH9gEDAfOKHMOx84pUxPBQ4DNgOe4H8uetyk/HwU2KpNW2f/jRr+fn11zavytxjROmci8O9l+ory/kFgb+ACgMx8JCIeqevzF+CXZfpRYHFmvh0Rj1ILT50WtZHAPYGryx+5UPsCgtoI4afK9KXAtxusYjRwfWa+VdZ3HfBhagHw6cycUZZ7ABgSEf2pfTleX/ZtUem3P7Ug91BZvh+wHXDHquyPVAXlMz2E2ue97S2jRlM+d5n5q4gYGBEDyrxpmfnnMr0vtVG11n4bR0T/zFzYweZ/npmLgcUR8TKwJbWnAZ0cEYeWZbam9vl7ldr3Tev5eg9QO/zbVns1N9reWGp/AN5f6u8LvNxgvftExNeo/aG3GTCzjIxtkpm/KctcCny8rs+vy+9gYUTMpxYWofZduXOb9S8AFgE/jIif1+3n3cDUiLgKuK4L9ndug3VoNRji1GNExEBqf8XtFBFJ7QbOWb60oMFzcYu3s/zZBywDFgNk5rLo/Lkyrd4FvJGZw1cyv6N78rT38L/FddNLqX1Rr2z5AP41M3/QwfakdcU04BxqIzwD69rbe0b2W3Vt7wL2qAt1ndX2c9k7IsZQC4V7ZOafIuJ2aqOEsPz3zVIa/3+0vZpX2F5Z/uLM/ObKioyIPtRG6EZm5nMRManUFLT/vVS/vWV175e1rT1rN9DfnVqonACcBHw0M0+IiL+hdsh7RkQMb1teg+22t7/qIp4Tp57kMOCSzPyrzBySmVsDT1P7K+8O4HCAiNiJFf+CXBULqR1eWOF9Zi4Ano6I8WVbERG7lOXu5n/O0zt8Jeu+AzgkIt4TERsBhwJ3rqyQsr25EXFI2d6GEfEeak8hOaaMDBIRW0XEFqu8p1J1/Ag4PTMfbdNe/9kfA7xSPjdt3UwtdFCWHd5gmbaf/ZUZALxeAtz2wKhO9KnX2Zpb3QYc1voZL+eYtX3oeWuIfKV8LxwGkJlvAPMjYnSZv7Lvpg6V9Q7I2k30T6F2IQgRsW1m/jYzvwW8wvLPLIdV3191EUOcepKJ1M5pq3ct8Bng+0C/chj1a8D0NdjOT4FDywnEH6Z22Par5WTfbal9GR0bEQ9TO6ft4NLvi8CJEXE/tS/5FWTmg9TOL5lO7Vy3H2bmQ42WrfNZaoduHqF2/sj/ysybqZ3jc285LHwNnfufj1RJmTk3M7/TYNYkYGT5fJwFHLWSVZzculxEzKJ2AVNbv6Z2yLX+woZGfkltRO4R4F+A+zq7H6tYMwCZOQv4Z+Dm0ucW4L1tlnkDuIjaYdAbqD07vNXngP8oFzas6khkvf7Az0oNvwG+VNrPjohHo3brkjuAh9v0m8Qq7K+6jk9skCRJqiBH4iRJkirIECdJklRBhjhJkqQKMsRJkiRVkCFOkiSpggxxkiRJFWSIkyRJqiBDnCRJUgX9f/dbAw6lP1HEAAAAAElFTkSuQmCC
+"
+>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>Pooling all readmissions into one group, the effects of readmission can be interpreted with better confidence. A third of patients admitted once expired whereas more than half of readmitted patients expired.</p>
+
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Feature-Engineering">Feature Engineering<a class="anchor" id="feature_engineering" /><a class="anchor-link" href="#Feature-Engineering">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Model-Development">Model Development<a class="anchor" id="model_development" /><a class="anchor-link" href="#Model-Development">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Logistic-Regression-">Logistic Regression <a class="anchor" id="logistic_regression" /><a class="anchor-link" href="#Logistic-Regression-">&#182;</a></h3>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Random-Forest-">Random Forest <a class="anchor" id="random_forest" /><a class="anchor-link" href="#Random-Forest-">&#182;</a></h3>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h3 id="Support-Vector-Machine-(SVM)-">Support Vector Machine (SVM) <a class="anchor" id="svm" /><a class="anchor-link" href="#Support-Vector-Machine-(SVM)-">&#182;</a></h3>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Best-Model-Analysis">Best Model Analysis<a class="anchor" id="model_analysis" /><a class="anchor-link" href="#Best-Model-Analysis">&#182;</a></h2>
+</div>
+</div>
+<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<h2 id="Conclusions">Conclusions<a class="anchor" id="conclusions" /><a class="anchor-link" href="#Conclusions">&#182;</a></h2>
 </div>
 </div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
 <div class="jp-Cell-inputWrapper">
@@ -14509,26 +14599,6 @@ Study factors which influence an intensive care patient's survival and build a c
 </div>
 </div>
 
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Feature-Engineering">Feature Engineering<a class="anchor" id="feature_engineering" /><a class="anchor-link" href="#Feature-Engineering">&#182;</a></h2>
-</div>
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Model-Development">Model Development<a class="anchor" id="model_development" /><a class="anchor-link" href="#Model-Development">&#182;</a></h2>
-</div>
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Model-Analysis">Model Analysis<a class="anchor" id="model_analysis" /><a class="anchor-link" href="#Model-Analysis">&#182;</a></h2>
-</div>
-</div>
-<div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Conclusions">Conclusions<a class="anchor" id="conclusions" /><a class="anchor-link" href="#Conclusions">&#182;</a></h2>
-</div>
 </div>
 <div class="jp-Cell-inputWrapper"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
